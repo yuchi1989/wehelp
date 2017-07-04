@@ -1,0 +1,136 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<head>
+<script src="/static/js/jquery.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+.class1 {
+    float: left;
+    margin: 5px;
+    padding: 15px;
+    width: 200px;
+    height: 50px;
+    border: 1px solid black;
+    text-align: center;
+} 
+</style>
+</head>
+
+<body>
+<span id="UserAgent"> </span>
+
+<div class="class1">
+    Username : <input type="textbox" style="width:80px;" id="user" value="username"></input> <br />
+    <button id="trackme" onclick="trackMe() " style="margin-top: 10px;">Track Me</button>
+</div>
+
+
+<div id="time" class="class1">
+</div>
+
+<div id="latitude" class="class1">
+</div>
+
+<div id="longitude" class="class1">
+</div>
+
+    <script>
+    var currPosition;
+    var username;
+    username = $('#user').val()
+    $('#user').on('click', function() {
+        $('#user').val('');
+    });
+    $('#user').on('blur', function() {
+        username1 = $('#user').val();
+        if (username1 != "") username = username1;
+        $('#user').val(username);
+    });
+    function trackMe(){
+        $('#user').prop('disabled',true);
+        username = $('#user').val();
+        $('#trackme').html("Stop");
+        $('#trackme').attr("onclick", "window.location.reload()");
+        init();
+        navigator.geolocation.getCurrentPosition(reportPosition
+        , errorCallback,
+        {
+
+            enableHighAccuracy: true,
+            maximumAge: Infinity
+        }); 
+        function reportPosition(position) {
+            updatePosition(position);
+            report();
+            timer();
+            setInterval(function(){
+                timer();
+            }, 1000);
+            setInterval(function(){
+                report();
+            }, 10000);
+        }
+        var watchID = navigator.geolocation.watchPosition(function(position) {
+            updatePosition(position);
+        }, 
+        errorCallback,
+        {
+
+            enableHighAccuracy: true,
+            maximumAge: Infinity
+        });
+
+        function updatePosition( position ){
+            currPosition = position;
+        }
+       
+        function init(){            
+            $("#time").html("Timestamp: <br>");
+            $("#latitude").html("Latitude: <br>");
+            $("#longitude").html("Longitude: <br>");
+        }
+
+        function timer(){
+            var lat = currPosition.coords.latitude;
+            var lng = currPosition.coords.longitude;
+            var myDate = new Date();
+            var displayDate = (myDate.getMonth()+1) + '/' + (myDate.getDate()) + '/' + myDate.getFullYear();
+            var displayTime =  myDate.getHours()+':'+myDate.getMinutes()+':'+myDate.getSeconds();
+            $("#time").html("Timestamp: <br>" + displayDate + " " + displayTime);
+            $("#latitude").html("Latitude: <br>" + lat.toString());
+            $("#longitude").html("Longitude: <br>" + lng.toString());
+        }
+        function report(){
+            var lat = currPosition.coords.latitude;
+            var lng = currPosition.coords.longitude;
+            var myDate = new Date();
+            jQuery.ajax({
+                type: "GET", 
+                dataType: 'json',
+                contentType: 'json',
+                url:  "/uploadgps", 
+                data: 'latitude='+lat+'&longitude='+lng+'&time='+myDate.getTime()+'&username='+username, 
+                cache: false
+                });
+        }
+        function errorCallback(error) {
+            var msg = "Can't get your location. Error = ";
+            if (error.code == 1)
+            msg += "PERMISSION_DENIED";
+            else if (error.code == 2)
+            msg += "POSITION_UNAVAILABLE";
+            else if (error.code == 3)
+            msg += "TIMEOUT";
+            msg += ", msg = "+error.message;
+
+            alert(msg);
+        }
+        
+
+    }
+    
+
+</script>
+</body>
+</html>
