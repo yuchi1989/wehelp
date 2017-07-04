@@ -4,6 +4,8 @@ from django.http import HttpResponse
 
 from django.template import loader
 
+from django.http import JsonResponse
+
 import csv
 
 def index(request):
@@ -43,5 +45,6 @@ def uploadgps(request):
     else:
         return HttpResponse("{status:'failure'}")
     '''
-    return HttpResponse("{status:'success'}")
+    status = {"status":"success"}
+    return JsonResponse(status)
 # Create your views here.

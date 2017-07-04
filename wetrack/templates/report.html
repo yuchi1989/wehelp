@@ -19,6 +19,11 @@
     height: 40px;
     text-align: center;
 }
+.class3{
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center; 
+}
  
 </style>
 </head>
@@ -28,9 +33,10 @@
 
 <div class="class2">
     Username : <input type="textbox" style="width:80px;" id="user" value="username"></input> 
-    <button id="trackme" onclick="trackMe() " style="margin-top: 10px;width:70px;">Track Me</button>
+    <button id="trackme" onclick="trackMe() " style="margin-top: 10px;width:80px;">Track Me</button>
 </div>
-
+<div id="status" class="class3">
+    </div>
 
 <div id="time" class="class1">
 </div>
@@ -44,6 +50,8 @@
     <script>
     var currPosition;
     var username;
+    var success = 0;
+    var failure = 0;
     username = $('#user').val()
     $('#user').on('click', function() {
         $('#user').val('');
@@ -120,8 +128,18 @@
                 contentType: 'json',
                 url:  "/uploadgps", 
                 data: 'latitude='+lat+'&longitude='+lng+'&time='+myDate.getTime()+'&username='+username, 
-                cache: false
-                });
+                cache: false,
+                success: function (data) {
+                      
+                      if (data.status=="success") success=success+1;
+                      else failure = failure + 1;
+                      $('#status').html("Geo info is being uploaded every 10 seconds. <br >" + "Uploading succeeds " + success + ", fails " + failure + ".");
+                },		
+                error: function (result) {
+                    failure = failure + 1;
+                    $('#status').html("Geo info is being uploaded every 10 seconds. <br >" + "Uploading succeeds " + success + ", fails " + failure + ".");
+                }
+            });
         }
         function errorCallback(error) {
             var msg = "Can't get your location. Error = ";
