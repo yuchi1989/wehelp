@@ -9,18 +9,26 @@
     margin: 0 auto;
     padding: 15px;
     width: 90%;
-    height: 50px;
+    height: 80px;
     text-align: center;
-} 
+}
+
+.class2 {
+    margin: 0 auto;
+    width: 90%;
+    height: 40px;
+    text-align: center;
+}
+ 
 </style>
 </head>
 
 <body>
 <span id="UserAgent"> </span>
 
-<div class="class1">
-    Username : <input type="textbox" style="width:80px;" id="user" value="username"></input> <br />
-    <button id="trackme" onclick="trackMe() " style="margin-top: 10px;">Track Me</button>
+<div class="class2">
+    Username : <input type="textbox" style="width:80px;" id="user" value="username"></input> 
+    <button id="trackme" onclick="trackMe() " style="margin-top: 10px;width:70px;">Track Me</button>
 </div>
 
 
@@ -95,14 +103,17 @@
             var myDate = new Date();
             var displayDate = (myDate.getMonth()+1) + '/' + (myDate.getDate()) + '/' + myDate.getFullYear();
             var displayTime =  myDate.getHours()+':'+myDate.getMinutes()+':'+myDate.getSeconds();
-            $("#time").html("Timestamp: <br>" + displayDate + " " + displayTime);
-            $("#latitude").html("Latitude: <br>" + lat.toString());
-            $("#longitude").html("Longitude: <br>" + lng.toString());
+            //$("#time").html("Timestamp: <br>" + displayDate + " " + displayTime);
+            //$("#latitude").html("Latitude: <br>" + lat.toFixed(7).toString());
+            //$("#longitude").html("Longitude: <br>" + lng.toFixed(7).toString());
         }
         function report(){
             var lat = currPosition.coords.latitude;
             var lng = currPosition.coords.longitude;
             var myDate = new Date();
+            $("#time").html("Timestamp: <br>" + parseInt(myDate.getTime() / 1000)).toString();
+            $("#latitude").html("Latitude: <br>" + lat.toFixed(7).toString());
+            $("#longitude").html("Longitude: <br>" + lng.toFixed(7).toString()); 
             jQuery.ajax({
                 type: "GET", 
                 dataType: 'json',
